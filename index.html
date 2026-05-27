@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KING PANEL FF</title>
+    <style>
+        /* ดีไซน์พื้นหลัง แดง-ฟ้า ตามสั่ง */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff1f4f, #1f75ff);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* กล่องพาเนลหลัก อยู่ตรงกลางเต็มจอ */
+        .panel-container {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #ff1f4f;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 31, 79, 0.5);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #1f75ff;
+            text-shadow: 0 0 10px #1f75ff;
+        }
+
+        /* ฟอร์ม Login */
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #1f75ff;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #ff1f4f, #1f75ff);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* หน้าเมนู (ซ่อนไว้ก่อน Login) */
+        .menu-box {
+            display: none;
+            text-align: left;
+        }
+
+        /* สวิตช์ เปิด-ปิด (Toggle Switch) */
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input { display: none; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #ff1f4f; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* ปุ่มหน้าต่างลอย */
+        .float-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1f75ff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px #1f75ff;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="panel-container" id="mainPanel">
+        <h2>👑 KING PANEL FF 👑</h2>
+        <hr style="border-color: #ff1f4f; margin-bottom: 20px;">
+
+        <div id="loginBox" class="login-box">
+            <input type="text" id="username" placeholder="User">
+            <input type="password" id="password" placeholder="Password">
+            <button class="btn" onclick="checkLogin()">LOGIN</button>
+        </div>
+
+        <div id="menuBox" class="menu-box">
+            <div class="menu-item">
+                <span>🎯 ช่วยเล็งหัว 65%</span>
+                <label class="switch"><input type="checkbox" id="aimlock" onchange="toggleMenu('ช่วยเล็งหัว 65%', this)"><span class="slider"></span></label>
+            </div>
+            <div class="menu-item">
+                <span>⚡ ช่วยลดการกระตุก</span>
+                <label class="switch"><input type="checkbox" id="antilag" onchange="toggleMenu('ช่วยลดการกระตุก', this)"><span class="slider"></span></label>
+            </div>
+            <div class="menu-item">
+                <span>🔄 หมุนจอไว</span>
+                <label class="switch"><input type="checkbox" id="fastspin" onchange="toggleMenu('หมุนจอไว', this)"><span class="slider"></span></label>
+            </div>
+            <div class="menu-item">
+                <span>⚫ กันดำ</span>
+                <label class="switch"><input type="checkbox" id="antiblack" onchange="toggleMenu('กันดำ', this)"><span class="slider"></span></label>
+            </div>
+            <div class="menu-item">
+                <span>🛡️ กันแบน</span>
+                <label class="switch"><input type="checkbox" id="antiban" onchange="toggleMenu('กันแบน', this)"><span class="slider"></span></label>
+            </div>
+            <button class="btn" style="background:#ff1f4f;" onclick="toggleFloat()">เปิดโหมดหน้าต่างลอย</button>
+        </div>
+    </div>
+
+    <div class="float-btn" id="floatBtn" onclick="toggleFloat()">MENU</div>
+
+    <script>
+        // ระบบเช็ค Login
+        function checkLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if(user === "King" && pass === "GAMME123") {
+                alert("เข้าระบบสำเร็จ! 🔥");
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('menuBox').style.display = 'block';
+            } else {
+                alert("รหัสผิดนะมึง ลองใหม่! ❌");
+            }
+        }
+
+        // ระบบเปิด-ปิดหน้าต่างลอย
+        function toggleFloat() {
+            const panel = document.getElementById('mainPanel');
+            const floatBtn = document.getElementById('floatBtn');
+
+            if (panel.style.display === 'none') {
+                panel.style.display = 'block';
+                floatBtn.style.display = 'none';
+            } else {
+                panel.style.display = 'none';
+                floatBtn.style.display = 'flex';
+            }
+        }
+
+        // ระบบแจ้งเตือนตอนเปิด-ปิดเมนูย่อย
+        function toggleMenu(menuName, element) {
+            if(element.checked) {
+                console.log(menuName + " : เปิดใช้งาน");
+            } else {
+                console.log(menuName + " : ปิดใช้งาน");
+            }
+        }
+    </script>
+</body>
+              </html>
+              
